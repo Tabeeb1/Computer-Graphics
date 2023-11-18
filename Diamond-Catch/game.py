@@ -3,13 +3,11 @@ from OpenGL.GLUT import *
 import random 
 from time import time
 HEIGHT, WIDTH = 800, 500
-# Initialize GLUT
 glutInit(sys.argv)
 glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE)
 glutInitWindowSize(WIDTH, HEIGHT)
 glutCreateWindow(b"Midpoint Line Drawing")
 
-# Set up OpenGL
 glClearColor(0.0, 0.0, 0.0, 1.0)
 glMatrixMode(GL_PROJECTION)
 glLoadIdentity()
@@ -17,6 +15,7 @@ glOrtho(0, WIDTH, 0, HEIGHT, -1, 1)
 glMatrixMode(GL_MODELVIEW)
 glLoadIdentity()
 glPointSize(2.0)
+
 
 IS_PAUSED = False
 SPEED = 100
@@ -34,6 +33,7 @@ def clamp(min, max, val):
     elif val>max:
         return max
     return val
+
 
 class Catcher:
     def __init__(self) -> None:
@@ -64,20 +64,18 @@ class Catcher:
         
     def move_left(self, move_val):
         global WIDTH, HEIGHT
-        # print(self.x1, self.x2, self.x3, self.x4)
-        self.x1 = clamp(10, (WIDTH-10)-(self.x2-self.x1), self.x1-int((move_val)*DELTATIME))
-        self.x2 = clamp(10+(self.x2-self.x1),WIDTH-10, self.x2-int((move_val)*DELTATIME))
-        self.x3 = clamp(0,WIDTH-(self.x4-self.x3), self.x3-int((move_val)*DELTATIME))
-        self.x4 = clamp((self.x4-self.x3),WIDTH, self.x4-int((move_val)*DELTATIME))
+        self.x1 = clamp(10, (WIDTH-10)-(self.x2-self.x1), self.x1-move_val)
+        self.x2 = clamp(10+(self.x2-self.x1),WIDTH-10, self.x2-move_val)
+        self.x3 = clamp(0,WIDTH-(self.x4-self.x3), self.x3-move_val)
+        self.x4 = clamp((self.x4-self.x3),WIDTH, self.x4-move_val)
         self.update_bbox()
         
     def move_right(self, move_val):
         global WIDTH, HEIGHT
-        # print(self.x1, self.x2, self.x3, self.x4)
-        self.x1 = clamp(10, (WIDTH-10)-(self.x2-self.x1), self.x1+int((move_val)*DELTATIME))
-        self.x2 = clamp(10+(self.x2-self.x1),WIDTH-10, self.x2+int((move_val)*DELTATIME))
-        self.x3 = clamp(0,WIDTH-(self.x4-self.x3), self.x3+int((move_val)*DELTATIME))
-        self.x4 = clamp((self.x4-self.x3),WIDTH, self.x4+int((move_val)*DELTATIME))
+        self.x1 = clamp(10, (WIDTH-10)-(self.x2-self.x1), self.x1+move_val)
+        self.x2 = clamp(10+(self.x2-self.x1),WIDTH-10, self.x2+move_val)
+        self.x3 = clamp(0,WIDTH-(self.x4-self.x3), self.x3+move_val)
+        self.x4 = clamp((self.x4-self.x3),WIDTH, self.x4+move_val)
         self.update_bbox()
         
 class Diamond:
@@ -103,14 +101,13 @@ class Diamond:
         
     def move_down(self, move_val):
         global WIDTH, HEIGHT, DELTATIME
-        # print(self.x1, self.x2, self.x3, self.x4)
-        # print((self.y1+move_val)*DELTATIME, DELTATIME)
-        self.y1 -= int((move_val)*DELTATIME)
-        self.y2 -= int((move_val)*DELTATIME)
-        self.y3 -= int((move_val)*DELTATIME)
-        self.y4 -= int((move_val)*DELTATIME)
+        self.y1 -= int((move_val))
+        self.y2 -= int((move_val))
+        self.y3 -= int((move_val))
+        self.y4 -= int((move_val))
         self.update_bbox()
         
+
 
 def draw_catcher():
     global CATCHER
@@ -133,7 +130,6 @@ def draw_diamonds():
         draw_line(diamond.x2, diamond.y2, diamond.x4, diamond.y4)
         draw_line(diamond.x3, diamond.y3, diamond.x4, diamond.y4)
         draw_line(diamond.x3, diamond.y3, diamond.x1, diamond.y1)
-# Function to draw a line using the midpoint line drawing algorithm
 def draw_line(x1, y1, x2, y2):
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
@@ -141,13 +137,12 @@ def draw_line(x1, y1, x2, y2):
     x_incr = 1 if x1 < x2 else -1
     y_incr = 1 if y1 < y2 else -1
 
+
     if dx > dy:
         d = 2 * dy - dx
         incrE = 2 * dy
         incrNE = 2 * (dy - dx)
 
-        # Set the color to white
-        # glColor3f(1.0, 1.0, 1.0)
 
         glBegin(GL_POINTS)
         for _ in range(dx + 1):
@@ -164,8 +159,6 @@ def draw_line(x1, y1, x2, y2):
         incrE = 2 * dx
         incrNE = 2 * (dx - dy)
 
-        # Set the color to white
-        # glColor3f(1.0, 1.0, 1.0)
 
         glBegin(GL_POINTS)
         for _ in range(dy + 1):
@@ -177,6 +170,7 @@ def draw_line(x1, y1, x2, y2):
                 x += x_incr
             y += y_incr
         glEnd()
+
 
 def check_collision(bbox1:dict, bbox2:dict=None, x=None, y=None):
     if bbox2:
@@ -191,6 +185,7 @@ def draw_restart():
     draw_line(30, 770, 40, 750)
     draw_line(30, 770, 60, 770)
 
+
 PLAY_PAUSE_BBOX = {"min_x":230, "min_y":750, "max_x":270, "max_y":790}      
 def play_pause():
     glColor3f(1, 0.75, 0)
@@ -202,16 +197,17 @@ def play_pause():
         draw_line(240, 790, 240, 750)
         draw_line(260, 790, 260, 750)
 
+
 EXIT_BBOX = {"min_x":430, "min_y":750, "max_x":470, "max_y":790}      
 def exit_btn():
     glColor3f(1, 0, 0)
     draw_line(430, 790, 470, 750)
     draw_line(430, 750, 470, 790)
 
+
 def on_pause_click():
     global IS_PAUSED, IS_GAME_OVER
     IS_PAUSED = not IS_PAUSED
-    print(IS_PAUSED, IS_GAME_OVER)
     if (not IS_PAUSED) and IS_GAME_OVER:
         on_start()
     
@@ -220,7 +216,7 @@ def on_start():
     IS_PAUSED = IS_GAME_OVER = False
     DIAMOND_LIST.clear()
     SCORE = 0
-    SPEED = 100
+    SPEED = 1
     SPWAN_INTERVAL = 5
     TIMER = 0
     CATCHER.reset()
@@ -237,32 +233,32 @@ def mouse(button, state, x, y):
             glutLeaveMainLoop()
     glutPostRedisplay()
 
+
 def special(key, x, y):
     global speed, CATCHER, IS_PAUSED, IS_GAME_OVER
     if IS_PAUSED or IS_GAME_OVER:
         return
     if key == GLUT_KEY_LEFT:
-        CATCHER.move_left(500)
+        CATCHER.move_left(5)
     if key == GLUT_KEY_RIGHT:
-        CATCHER.move_right(500)
+        CATCHER.move_right(5)
     glutPostRedisplay()
 
-def animate():
+
+def animate(_):
     global SPEED, CATCHER, IS_PAUSED, SCORE, IS_GAME_OVER, PREV_FRAME_TIME, DELTATIME, SPWAN_INTERVAL, TIMER
     t0 = time()
     DELTATIME = t0 - PREV_FRAME_TIME
     PREV_FRAME_TIME = t0
     TIMER += DELTATIME
-    
-    print(SPEED, SPWAN_INTERVAL)
-    # print(int(1/DELTATIME))
-    # print(TIMER)
+
+
     if not IS_PAUSED:
         if TIMER > SPWAN_INTERVAL:
             spwan_diamond()
-            SPWAN_INTERVAL -= 0.1
+            SPWAN_INTERVAL -= 0.5
             SPWAN_INTERVAL = clamp(0.5, 5, SPWAN_INTERVAL)
-            SPEED += 2
+            SPEED += 0.1
             TIMER = 0
         
         for diamond in DIAMOND_LIST.copy():
@@ -279,14 +275,16 @@ def animate():
                 break
             diamond.move_down(SPEED)
     glutPostRedisplay()
-    # glutTimerFunc(1000 // 60, timer, 0) # 10 Frame Per second    
+    glutTimerFunc(1000 // 60, animate, 0)     
 
 
 CATCHER = Catcher()
 spwan_diamond()
-# Display function
+
+
 def display():
     glClear(GL_COLOR_BUFFER_BIT)
+
 
     draw_restart()
     play_pause()
@@ -296,11 +294,11 @@ def display():
     draw_diamonds()
     glutSwapBuffers()
 
+
 glutSpecialFunc(special)
 glutMouseFunc(mouse)
 glutDisplayFunc(display)
-# glutTimerFunc(0, timer, 0)
-
-glutIdleFunc(animate)
-# Start the main loop
+glutTimerFunc(0, animate, 0)
 glutMainLoop()
+
+
